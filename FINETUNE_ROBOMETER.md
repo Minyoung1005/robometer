@@ -43,7 +43,21 @@ Training needs a **preprocessed** cache from a HuggingFace dataset in RBM format
 
 **Other datasets:** RBM-style Hub datasets: set `train_datasets`/`train_subsets` and `ROBOMETER_DATASET_PATH` in the preprocess config, then run step 4. Raw data: add a loader (see [CustomDataset.md](dataset_upload/dataset_guides/CustomDataset.md)).
 
----
+
+## IMPORTANT STEP: Add a success / progress cutoff to `dataset_success_cutoff.txt`
+
+Add a success / progress cutoff to `dataset_success_cutoff.txt` for your dataset.
+This is used to threshold progress and success for each trajectory.
+
+For example, if your trajectories have 10 frames and most of them are successful by frame 9, then you should set the cutoff to 0.9.
+This is very important to ensure well-calibrated progress and success predictions.
+We need this because most teleoperated datasets don't have consistent trajectory endpoints, and computing linear progress and success labels based on assuming the endpoint is at the last frame is not reliable.
+
+Modify: `robometer/data/dataset_success_cutoff.txt` to add your cutoff corresponding to the name of the processed `data_source` in the preprocessing config you made in the above steps.
+
+### Again, *VERY IMPORTANT* to ensure well-calibrated progress and success predictions.
+
+If your dataset is simulation, it's most likely that you will have a dataset cutoff of 1.0 because you can get perfect trajectory ends in simulation.
 
 ## 2. LoRA fine-tuning
 

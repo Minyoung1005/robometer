@@ -30,8 +30,8 @@ model:
   train_preference_head: true   # Whether to train the preference prediction head
   train_success_head: false     # Whether to train the success prediction head
   average_temporal_patches: false # Whether to average the patches for video frames when multi_image=False
-  use_per_frame_progress_token: false
-  # Pooling strategy used when extracting per-frame embeddings from vision token spans (multi-image mode)
+  use_per_frame_progress_token: true # Inserts <|prog_token|> after each frame for per-frame progress prediction. Requires use_multi_image=True.
+  # Pooling strategy used when extracting per-frame embeddings from vision token spans (multi-image mode), when use_per_frame_progress_token=False.
   # - mean: average over patch tokens for each frame (current default)
   # - boundary: use the last patch token in the frame span
   # - attention: learned attention pooling over patch tokens in the frame span
@@ -84,7 +84,9 @@ data:
   traj_same_source_prob: 0.5  # Probability of sampling alternative task instruction from same data source
 
   # Data generation settings
-  sample_type_ratio: [1, 0, 0]  # Ratio of preference, progress (progress absorbed in preference if predict_pref_progress is true)
+  sample_type_ratio: [1, 0, 0]  # Ratio of preference, progress (progress absorbed in preference if predict_pref_progress is true). 
+  # do not change the sample type ratio from [1, 0, 0] unless you know what you are doing -- the default will train, with a single LLM forward pass, all 3 prediction heads.
+
   dataset_preference_ratio: 0.7  # Ratio of preferences from dataset vs generated
   # Tunable strategy ratios for preference negative generation: [rewind, suboptimal_same_task, different_task, reverse_progress]
   preference_strategy_ratio: [1, 1, 1, 1]
